@@ -238,7 +238,7 @@ if (isset($_SESSION['feedback_message'])) {
         <div class="bg-white rounded-xl shadow-xl p-6 md:p-8 border border-gray-200">
             <header class="mb-8 pb-6 border-b border-gray-200">
                 <h1 class="text-3xl font-bold text-primary">
-                    <i class="fas fa-bullhorn mr-3"></i>Manage Announcements
+                    </i>Manage Announcements
                 </h1>
             </header>
             

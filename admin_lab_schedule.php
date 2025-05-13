@@ -277,7 +277,7 @@ foreach ($labs as $lab_item) {
             <header class="mb-8 border-b border-gray-200 pb-6">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
                     <h1 class="text-3xl font-bold text-primary mb-2 md:mb-0">
-                        <i class="fas fa-calendar-check mr-3"></i>Static Lab Schedule
+                        </i>Lab Schedules
                     </h1>
                     <div class="text-sm text-gray-500 italic">
                         <i class="fas fa-info-circle mr-1"></i> This schedule reflects fixed lab availability for the semester.

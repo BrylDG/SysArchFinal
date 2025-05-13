@@ -318,7 +318,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['adjust_points'])) {
     <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <header class="mb-12 text-center">
             <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-500">
-                <i class="fas fa-trophy mr-3"></i>Student Leaderboard
+                </i>Student Leaderboard
             </h1>
             <p class="mt-2 text-slate-custom-400 text-lg">Recognizing top performers and their achievements.</p>
         </header>

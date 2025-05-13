@@ -375,7 +375,7 @@ function formatSizeUnits($bytes) {
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-900">
-                            <i class="fas fa-folder-open mr-2 text-primary"></i> Resource Management
+                            </i> Resource Management
                         </h1>
                         <p class="mt-2 text-sm text-gray-500">Upload and manage lab resources for students and faculty</p>
                     </div>
