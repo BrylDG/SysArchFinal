@@ -157,27 +157,6 @@ $page_title = "Lab Schedule";
             // Update URL without reloading
             history.pushState(null, '', `?group=${groupCode}`);
         }
-        
-        // Toggle mobile menu
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('hidden');
-        }
-        
-        // Toggle dropdown menus
-        function toggleDropdown(menuId) {
-            const menu = document.getElementById(menuId);
-            menu.classList.toggle('hidden');
-        }
-        
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.dropdown-button') && !e.target.closest('.dropdown-menu')) {
-                document.querySelectorAll('.dropdown-menu').forEach(menu => {
-                    menu.classList.add('hidden');
-                });
-            }
-        });
     </script>
     <style>
         body {
@@ -268,6 +247,34 @@ $page_title = "Lab Schedule";
             background-color: rgba(248, 113, 113, 0.2);
             color: #dc2626;
         }
+
+        /* Ensure dropdowns appear above other content */
+        .nav-dropdown-content {
+            z-index: 1000;
+        }
+
+        #userDropdown {
+            z-index: 1001;
+        }
+
+        #notificationDropdown {
+            z-index: 1002;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body class="min-h-screen font-sans pt-16">
@@ -310,61 +317,63 @@ $page_title = "Lab Schedule";
                         </div>
                     </div>
                     
-                   <!-- User and Notification Controls -->
-                   <div class="flex items-center gap-4 ml-4">
+                    <!-- User and Notification Controls -->
+                    <div class="flex items-center gap-4 ml-4">
                         <!-- Notification Button -->
-<div class="relative">
-    <button id="notificationButton" class="relative p-2 text-light hover:text-secondary rounded-full hover:bg-white/10 transition-all duration-200 focus:outline-none">
-        <i class="fas fa-bell text-lg"></i>
-        <span class="notification-badge hidden">0</span>
-    </button>
-    
-    <!-- Notification Dropdown -->
-    <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-secondary/20 z-50 overflow-hidden">
-        <div class="p-3 bg-primary text-white flex justify-between items-center">
-            <span class="font-semibold">Notifications</span>
-            <button id="markAllRead" class="text-xs bg-white/20 hover:bg-white/30 px-2 py-1 rounded transition-all">
-                Mark all as read
-            </button>
-        </div>
-        <div id="notificationList" class="max-h-80 overflow-y-auto">
-            <div class="p-4 text-center text-secondary">No notifications</div>
-        </div>
-    </div>
-</div>
+                        <div class="relative">
+                            <button id="notificationButton" class="relative p-2 text-light hover:text-secondary rounded-full hover:bg-white/10 transition-all duration-200 focus:outline-none">
+                                <i class="fas fa-bell text-lg"></i>
+                                <span class="notification-badge hidden">0</span>
+                            </button>
+                            
+                            <!-- Notification Dropdown -->
+                            <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-secondary/20 z-50 overflow-hidden">
+                                <div class="p-3 bg-primary text-white flex justify-between items-center">
+                                    <span class="font-semibold">Notifications</span>
+                                    <button id="markAllRead" class="text-xs bg-white/20 hover:bg-white/30 px-2 py-1 rounded transition-all">
+                                        Mark all as read
+                                    </button>
+                                </div>
+                                <div id="notificationList" class="max-h-80 overflow-y-auto">
+                                    <div class="p-4 text-center text-secondary">No notifications</div>
+                                </div>
+                            </div>
+                        </div>
 
-<!-- User Profile Dropdown -->
-<div class="relative">
-    <button id="userMenuButton" class="flex items-center gap-2 group focus:outline-none">
-        <div class="relative">
-            <img class="h-9 w-9 rounded-full border-2 border-white/20 group-hover:border-primary transition-all" 
-                src="uploads/<?php echo htmlspecialchars($profile_picture); ?>" 
-                onerror="this.src='assets/default_avatar.png'" 
-                alt="Profile">
-        </div>
-        <span class="text-light font-medium hidden md:inline-block"><?php echo htmlspecialchars($firstname); ?></span>
-    </button>
-    
-    <!-- Dropdown menu -->
-    <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-secondary/20 z-50 overflow-hidden transition-all duration-200">
-        <div class="py-1">
-            <a href="edit-profile.php" class="flex items-center px-4 py-2 text-sm text-dark hover:bg-secondary/20 transition-colors">
-                <i class="fas fa-user-edit mr-2 text-primary"></i>
-                Edit Profile
-            </a>
-            <div class="border-t border-secondary/20 my-1"></div>
-            <a href="logout.php" onclick="return confirm('Are you sure you want to log out?')" 
-            class="flex items-center px-4 py-2 text-sm text-dark hover:bg-secondary/20 transition-colors">
-                <i class="fas fa-sign-out-alt mr-2 text-primary"></i>
-                Log Out
-            </a>
-        </div>
-    </div>
-</div>
+                        <!-- User Profile Dropdown - Fixed Structure -->
+                        <div class="relative">
+                            <button id="userMenuButton" class="flex items-center gap-2 group focus:outline-none">
+                                <div class="relative">
+                                    <img class="h-9 w-9 rounded-full border-2 border-white/20 group-hover:border-primary transition-all" 
+                                        src="uploads/<?php echo htmlspecialchars($profile_picture); ?>" 
+                                        onerror="this.src='assets/default_avatar.png'" 
+                                        alt="Profile">
+                                </div>
+                                <span class="text-light font-medium hidden md:inline-block"><?php echo htmlspecialchars($firstname); ?></span>
+                            </button>
+                            
+                            <!-- Dropdown menu -->
+                            <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-secondary/20 overflow-hidden transition-all duration-200">
+                                <div class="py-1">
+                                    <a href="edit-profile.php" class="flex items-center px-4 py-2 text-sm text-dark hover:bg-secondary/20 transition-colors">
+                                        <i class="fas fa-user-edit mr-2 text-primary"></i>
+                                        Edit Profile
+                                    </a>
+                                    <div class="border-t border-secondary/20 my-1"></div>
+                                    <a href="logout.php" onclick="return confirm('Are you sure you want to log out?')" 
+                                    class="flex items-center px-4 py-2 text-sm text-dark hover:bg-secondary/20 transition-colors">
+                                        <i class="fas fa-sign-out-alt mr-2 text-primary"></i>
+                                        Log Out
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                </div>
+                
                 <!-- Mobile menu button -->
                 <div class="mobile-menu md:hidden flex items-center">
-                    <button onclick="toggleMobileMenu()" class="text-light hover:text-secondary focus:outline-none">
+                    <button id="mobileMenuButton" class="text-light hover:text-secondary focus:outline-none">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
                 </div>
@@ -590,27 +599,30 @@ $page_title = "Lab Schedule";
         document.getElementById('mobileMenu').classList.toggle('hidden');
     });
 
-    // Profile dropdown toggle
-    document.getElementById('userMenuButton').addEventListener('click', function(e) {
+    // Profile dropdown toggle - fixed version
+    const userMenuButton = document.getElementById('userMenuButton');
+    const userDropdown = document.getElementById('userDropdown');
+
+    userMenuButton.addEventListener('click', function(e) {
         e.stopPropagation();
-        document.getElementById('userDropdown').classList.toggle('hidden');
-        
         // Close notification dropdown if open
-        document.getElementById('notificationDropdown').classList.add('hidden');
+        notificationDropdown.classList.add('hidden');
+        // Toggle user dropdown
+        userDropdown.classList.toggle('hidden');
     });
 
-    // Notification dropdown toggle
-    document.getElementById('notificationButton').addEventListener('click', function(e) {
+    // Notification dropdown toggle - fixed version
+    const notificationButton = document.getElementById('notificationButton');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+
+    notificationButton.addEventListener('click', function(e) {
         e.stopPropagation();
-        document.getElementById('notificationDropdown').classList.toggle('hidden');
-        
         // Close user dropdown if open
-        document.getElementById('userDropdown').classList.add('hidden');
-        
-        // Load notifications when opening
-        if (!document.getElementById('notificationDropdown').classList.contains('hidden')) {
-            loadNotifications();
-        }
+        userDropdown.classList.add('hidden');
+        // Toggle notification dropdown
+        notificationDropdown.classList.toggle('hidden');
+        // Load notifications
+        loadNotifications();
     });
 
     // Mark all as read
@@ -619,10 +631,15 @@ $page_title = "Lab Schedule";
         markAllNotificationsAsRead();
     });
 
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', function() {
-        document.getElementById('userDropdown').classList.add('hidden');
-        document.getElementById('notificationDropdown').classList.add('hidden');
+    // Close dropdowns when clicking outside - fixed version
+    document.addEventListener('click', function(e) {
+        // Check if click is outside both dropdowns
+        if (!userDropdown.contains(e.target) && e.target !== userMenuButton && !userMenuButton.contains(e.target)) {
+            userDropdown.classList.add('hidden');
+        }
+        if (!notificationDropdown.contains(e.target) && e.target !== notificationButton && !notificationButton.contains(e.target)) {
+            notificationDropdown.classList.add('hidden');
+        }
     });
 
     // Function to load notifications
@@ -700,36 +717,6 @@ $page_title = "Lab Schedule";
     }
     setInterval(updateCurrentTime, 1000);
     updateCurrentTime(); // Initial call
-
-    // Define day groups mapping for JavaScript
-    const dayGroups = {
-        'MW': 'Monday/Wednesday',
-        'TTh': 'Tuesday/Thursday',
-        'Fri': 'Friday',
-        'Sat': 'Saturday'
-    };
-    
-    function showDayGroup(groupCode) {
-        // Hide all tables and deactivate all tabs
-        document.querySelectorAll('.day-group-table').forEach(table => {
-            table.classList.add('hidden');
-        });
-        document.querySelectorAll('.day-group-tab').forEach(tab => {
-            tab.classList.remove('bg-primary', 'text-light');
-            tab.classList.add('bg-secondary', 'text-dark');
-        });
-        
-        // Show selected table and activate tab
-        document.getElementById(`table-${groupCode}`).classList.remove('hidden');
-        document.getElementById(`tab-${groupCode}`).classList.add('bg-primary', 'text-light');
-        document.getElementById(`tab-${groupCode}`).classList.remove('bg-secondary', 'text-dark');
-        
-        // Update the title
-        document.getElementById('schedule-title').textContent = `Lab Schedule - ${dayGroups[groupCode]}`;
-        
-        // Update URL without reloading
-        history.pushState(null, '', `?group=${groupCode}`);
-    }
 </script>
 </body>
 </html>
