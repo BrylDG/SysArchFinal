@@ -347,7 +347,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['adjust_points'])) {
                     <div class="podium-base w-full rounded-t-xl pt-16 p-6 text-center shadow-2xl">
                         <h3 class="text-2xl font-semibold text-slate-custom-900"><?php echo htmlspecialchars($student['firstname'] . ' ' . $student['lastname']); ?></h3>
                         <p class="text-3xl font-bold text-white mt-1"><?php echo $student['points']; ?> <span class="text-sm font-normal">pts</span></p>
-                        <div class="mt-3 text-5xl text-slate-custom-800 opacity-75">🥈</div>
                     </div>
                     <?php else: ?>
                         <div class="podium-base w-full rounded-t-xl p-6 text-center h-36 flex items-center justify-center"><span class="text-slate-custom-700">Position Available</span></div>
@@ -361,7 +360,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['adjust_points'])) {
                     <div class="podium-base w-full rounded-t-xl pt-20 p-8 text-center shadow-2xl">
                         <h3 class="text-3xl font-bold text-slate-custom-900"><?php echo htmlspecialchars($student['firstname'] . ' ' . $student['lastname']); ?></h3>
                         <p class="text-4xl font-extrabold text-white mt-1"><?php echo $student['points']; ?> <span class="text-lg font-normal">pts</span></p>
-                        <div class="mt-4 text-6xl text-slate-custom-800 opacity-75">🥇</div>
                     </div>
                      <?php else: ?>
                         <div class="podium-base w-full rounded-t-xl p-8 text-center h-48 flex items-center justify-center"><span class="text-slate-custom-700">Position Available</span></div>
@@ -375,7 +373,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['adjust_points'])) {
                     <div class="podium-base w-full rounded-t-xl pt-12 p-5 text-center shadow-2xl">
                         <h3 class="text-xl font-semibold text-slate-custom-900"><?php echo htmlspecialchars($student['firstname'] . ' ' . $student['lastname']); ?></h3>
                         <p class="text-2xl font-bold text-white mt-1"><?php echo $student['points']; ?> <span class="text-xs font-normal">pts</span></p>
-                        <div class="mt-2 text-4xl text-slate-custom-800 opacity-75">🥉</div>
                     </div>
                     <?php else: ?>
                          <div class="podium-base w-full rounded-t-xl p-5 text-center h-28 flex items-center justify-center"><span class="text-slate-custom-700">Position Available</span></div>
