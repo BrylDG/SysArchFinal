@@ -480,110 +480,118 @@ $all_records = $result->fetch_all(MYSQLI_ASSOC);
     </main>
 
     <script>
-        // Mobile menu toggle
-        document.getElementById('mobile-menu-button').addEventListener('click', function() {
-            document.getElementById('mobileMenu').classList.toggle('hidden');
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobileMenuButton');
+            const mobileMenu = document.getElementById('mobileMenu');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Profile dropdown toggle
+            const userMenuButton = document.getElementById('userMenuButton');
+            const userDropdown = document.getElementById('userDropdown');
 
-        // User dropdown toggle
-        document.getElementById('userMenuButton').addEventListener('click', function() {
-            const menu = document.getElementById('userDropdown');
-            menu.classList.toggle('hidden');
-        });
+            userMenuButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('hidden');
+            });
 
-        // Notification functionality
-        const notificationButton = document.getElementById('notificationButton');
-        const notificationDropdown = document.getElementById('notificationDropdown');
-        const notificationBadge = document.querySelector('.notification-badge');
-        
-        // Toggle notification dropdown
-        notificationButton.addEventListener('click', function(e) {
-            e.stopPropagation();
-            notificationDropdown.classList.toggle('hidden');
-            loadNotifications();
-        });
-        
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function() {
-            document.getElementById('userDropdown').classList.add('hidden');
-            notificationDropdown.classList.add('hidden');
-        });
-        
-        // Prevent dropdown from closing when clicking inside
-        notificationDropdown.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-        
-        // Mark all as read
-        document.getElementById('markAllRead').addEventListener('click', function() {
-            markAllNotificationsAsRead();
-        });
-        
-        // Function to load notifications
-        function loadNotifications() {
-            fetch('get_notifications.php')
-                .then(response => response.json())
-                .then(data => {
-                    const notificationList = document.getElementById('notificationList');
-                    
-                    if (data.length === 0) {
-                        notificationList.innerHTML = '<div class="p-3 text-center text-secondary">No notifications</div>';
-                        notificationBadge.classList.add('hidden');
-                        return;
-                    }
-                    
-                    notificationList.innerHTML = '';
-                    let unreadCount = 0;
-                    
-                    data.forEach(notification => {
-                        const notificationItem = document.createElement('div');
-                        notificationItem.className = `p-3 border-b border-gray-200 ${notification.is_read ? 'text-secondary' : 'text-dark bg-secondary/50'}`;
-                        notificationItem.innerHTML = `
-                            <div class="flex justify-between items-start">
-                                <div class="flex-1">
-                                    <p class="text-sm">${notification.message}</p>
-                                    <p class="text-xs text-secondary mt-1">${notification.created_at}</p>
-                                </div>
-                                ${notification.is_read ? '' : '<span class="w-2 h-2 rounded-full bg-primary ml-2"></span>'}
-                            </div>
-                        `;
-                        notificationList.appendChild(notificationItem);
+            // Notification functionality
+            const notificationButton = document.getElementById('notificationButton');
+            const notificationDropdown = document.getElementById('notificationDropdown');
+            const notificationBadge = document.querySelector('.notification-badge');
+            
+            // Toggle notification dropdown
+            notificationButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                notificationDropdown.classList.toggle('hidden');
+                loadNotifications();
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function() {
+                document.getElementById('userDropdown').classList.add('hidden');
+                notificationDropdown.classList.add('hidden');
+            });
+            
+            // Prevent dropdown from closing when clicking inside
+            notificationDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // Mark all as read
+            document.getElementById('markAllRead').addEventListener('click', function() {
+                markAllNotificationsAsRead();
+            });
+            
+            // Function to load notifications
+            function loadNotifications() {
+                fetch('get_notifications.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        const notificationList = document.getElementById('notificationList');
                         
-                        if (!notification.is_read) {
-                            unreadCount++;
+                        if (data.length === 0) {
+                            notificationList.innerHTML = '<div class="p-3 text-center text-secondary">No notifications</div>';
+                            notificationBadge.classList.add('hidden');
+                            return;
+                        }
+                        
+                        notificationList.innerHTML = '';
+                        let unreadCount = 0;
+                        
+                        data.forEach(notification => {
+                            const notificationItem = document.createElement('div');
+                            notificationItem.className = `p-3 border-b border-gray-200 ${notification.is_read ? 'text-secondary' : 'text-dark bg-secondary/50'}`;
+                            notificationItem.innerHTML = `
+                                <div class="flex justify-between items-start">
+                                    <div class="flex-1">
+                                        <p class="text-sm">${notification.message}</p>
+                                        <p class="text-xs text-secondary mt-1">${notification.created_at}</p>
+                                    </div>
+                                    ${notification.is_read ? '' : '<span class="w-2 h-2 rounded-full bg-primary ml-2"></span>'}
+                                </div>
+                            `;
+                            notificationList.appendChild(notificationItem);
+                            
+                            if (!notification.is_read) {
+                                unreadCount++;
+                            }
+                        });
+                        
+                        if (unreadCount > 0) {
+                            notificationBadge.textContent = unreadCount;
+                            notificationBadge.classList.remove('hidden');
+                        } else {
+                            notificationBadge.classList.add('hidden');
                         }
                     });
-                    
-                    if (unreadCount > 0) {
-                        notificationBadge.textContent = unreadCount;
-                        notificationBadge.classList.remove('hidden');
-                    } else {
-                        notificationBadge.classList.add('hidden');
+            }
+            
+            // Function to mark all notifications as read
+            function markAllNotificationsAsRead() {
+                fetch('mark_notifications_read.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadNotifications();
                     }
                 });
-        }
-        
-        // Function to mark all notifications as read
-        function markAllNotificationsAsRead() {
-            fetch('mark_notifications_read.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    loadNotifications();
-                }
-            });
-        }
-        
-        // Load notifications on page load
-        loadNotifications();
+            }
+            
+            // Load notifications on page load
+            loadNotifications();
 
-        // Check for new notifications every 30 seconds
-        setInterval(loadNotifications, 30000);
+            // Check for new notifications every 30 seconds
+            setInterval(loadNotifications, 30000);
+        });
     </script>
 </body>
 </html>

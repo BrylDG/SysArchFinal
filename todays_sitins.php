@@ -528,206 +528,219 @@ $lab_data = json_encode(array_values($lab_counts));
     </main>
 
     <script>
-        // Mobile menu toggle
-        document.getElementById('mobile-menu-button').addEventListener('click', function() {
-            const sidebar = document.querySelector('.fixed.inset-y-0.left-0.w-64');
-            sidebar.classList.toggle('hidden');
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
 
-        // User dropdown toggle
-        document.getElementById('userMenuButton').addEventListener('click', function() {
-            const menu = document.getElementById('userDropdown');
-            menu.classList.toggle('hidden');
-        });
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobileMenuButton');
+            const mobileMenu = document.getElementById('mobileMenu');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Profile dropdown toggle
+            const userMenuButton = document.getElementById('userMenuButton');
+            const userDropdown = document.getElementById('userDropdown');
 
-        // Notification functionality
-        const notificationButton = document.getElementById('notificationButton');
-        const notificationDropdown = document.getElementById('notificationDropdown');
-        const notificationBadge = document.querySelector('.notification-badge');
-        
-        // Toggle notification dropdown
-        notificationButton.addEventListener('click', function(e) {
-            e.stopPropagation();
-            notificationDropdown.classList.toggle('hidden');
-            loadNotifications();
-        });
-        
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function() {
-            document.getElementById('userDropdown').classList.add('hidden');
-            notificationDropdown.classList.add('hidden');
-        });
-        
-        // Prevent dropdown from closing when clicking inside
-        notificationDropdown.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-        
-        // Mark all as read
-        document.getElementById('markAllRead').addEventListener('click', function() {
-            markAllNotificationsAsRead();
-        });
-        
-        // Function to load notifications
-        function loadNotifications() {
-            fetch('get_notifications.php')
-                .then(response => response.json())
-                .then(data => {
-                    const notificationList = document.getElementById('notificationList');
-                    
-                    if (data.length === 0) {
-                        notificationList.innerHTML = '<div class="p-3 text-center text-secondary">No notifications</div>';
-                        notificationBadge.classList.add('hidden');
-                        return;
-                    }
-                    
-                    notificationList.innerHTML = '';
-                    let unreadCount = 0;
-                    
-                    data.forEach(notification => {
-                        const notificationItem = document.createElement('div');
-                        notificationItem.className = `p-3 border-b border-gray-200 ${notification.is_read ? 'text-secondary' : 'text-dark bg-secondary/50'}`;
-                        notificationItem.innerHTML = `
-                            <div class="flex justify-between items-start">
-                                <div class="flex-1">
-                                    <p class="text-sm">${notification.message}</p>
-                                    <p class="text-xs text-secondary mt-1">${notification.created_at}</p>
-                                </div>
-                                ${notification.is_read ? '' : '<span class="w-2 h-2 rounded-full bg-primary ml-2"></span>'}
-                            </div>
-                        `;
-                        notificationList.appendChild(notificationItem);
+            userMenuButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('hidden');
+            });
+
+            // Notification functionality
+            const notificationButton = document.getElementById('notificationButton');
+            const notificationDropdown = document.getElementById('notificationDropdown');
+            const notificationBadge = document.querySelector('.notification-badge');
+            
+            // Toggle notification dropdown
+            notificationButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                notificationDropdown.classList.toggle('hidden');
+                loadNotifications();
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function() {
+                document.getElementById('userDropdown').classList.add('hidden');
+                notificationDropdown.classList.add('hidden');
+            });
+            
+            // Prevent dropdown from closing when clicking inside
+            notificationDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // Mark all as read
+            document.getElementById('markAllRead').addEventListener('click', function() {
+                markAllNotificationsAsRead();
+            });
+            
+            // Function to load notifications
+            function loadNotifications() {
+                fetch('get_notifications.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        const notificationList = document.getElementById('notificationList');
                         
-                        if (!notification.is_read) {
-                            unreadCount++;
+                        if (data.length === 0) {
+                            notificationList.innerHTML = '<div class="p-3 text-center text-secondary">No notifications</div>';
+                            notificationBadge.classList.add('hidden');
+                            return;
+                        }
+                        
+                        notificationList.innerHTML = '';
+                        let unreadCount = 0;
+                        
+                        data.forEach(notification => {
+                            const notificationItem = document.createElement('div');
+                            notificationItem.className = `p-3 border-b border-gray-200 ${notification.is_read ? 'text-secondary' : 'text-dark bg-secondary/50'}`;
+                            notificationItem.innerHTML = `
+                                <div class="flex justify-between items-start">
+                                    <div class="flex-1">
+                                        <p class="text-sm">${notification.message}</p>
+                                        <p class="text-xs text-secondary mt-1">${notification.created_at}</p>
+                                    </div>
+                                    ${notification.is_read ? '' : '<span class="w-2 h-2 rounded-full bg-primary ml-2"></span>'}
+                                </div>
+                            `;
+                            notificationList.appendChild(notificationItem);
+                            
+                            if (!notification.is_read) {
+                                unreadCount++;
+                            }
+                        });
+                        
+                        if (unreadCount > 0) {
+                            notificationBadge.textContent = unreadCount;
+                            notificationBadge.classList.remove('hidden');
+                        } else {
+                            notificationBadge.classList.add('hidden');
                         }
                     });
-                    
-                    if (unreadCount > 0) {
-                        notificationBadge.textContent = unreadCount;
-                        notificationBadge.classList.remove('hidden');
-                    } else {
-                        notificationBadge.classList.add('hidden');
+            }
+            
+            // Function to mark all notifications as read
+            function markAllNotificationsAsRead() {
+                fetch('mark_notifications_read.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadNotifications();
                     }
                 });
-        }
-        
-        // Function to mark all notifications as read
-        function markAllNotificationsAsRead() {
-            fetch('mark_notifications_read.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    loadNotifications();
+            }
+            
+            // Load notifications on page load
+            loadNotifications();
+
+            // Check for new notifications every 30 seconds
+            setInterval(loadNotifications, 30000);
+
+            // Chart colors
+            const chartColors = [
+                'rgba(18, 52, 88, 0.8)',    // primary
+                'rgba(16, 185, 129, 0.8)',  // emerald
+                'rgba(245, 158, 11, 0.8)',  // amber
+                'rgba(239, 68, 68, 0.8)',    // red
+                'rgba(139, 92, 246, 0.8)',   // violet
+                'rgba(20, 184, 166, 0.8)',   // teal
+                'rgba(234, 88, 12, 0.8)',    // orange
+                'rgba(6, 182, 212, 0.8)'     // cyan
+            ];
+
+            // Purpose Chart
+            const purposeCtx = document.getElementById('purposeChart').getContext('2d');
+            const purposeChart = new Chart(purposeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: <?php echo $purpose_labels; ?>,
+                    datasets: [{
+                        data: <?php echo $purpose_data; ?>,
+                        backgroundColor: chartColors.slice(0, <?php echo count($purpose_counts); ?>),
+                        borderColor: 'rgba(255, 255, 255, 0.8)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#374151',
+                                font: {
+                                    family: 'Poppins'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '70%'
                 }
             });
-        }
-        
-        // Load notifications on page load
-        loadNotifications();
 
-        // Check for new notifications every 30 seconds
-        setInterval(loadNotifications, 30000);
-
-        // Chart colors
-        const chartColors = [
-            'rgba(18, 52, 88, 0.8)',    // primary
-            'rgba(16, 185, 129, 0.8)',  // emerald
-            'rgba(245, 158, 11, 0.8)',  // amber
-            'rgba(239, 68, 68, 0.8)',    // red
-            'rgba(139, 92, 246, 0.8)',   // violet
-            'rgba(20, 184, 166, 0.8)',   // teal
-            'rgba(234, 88, 12, 0.8)',    // orange
-            'rgba(6, 182, 212, 0.8)'     // cyan
-        ];
-
-        // Purpose Chart
-        const purposeCtx = document.getElementById('purposeChart').getContext('2d');
-        const purposeChart = new Chart(purposeCtx, {
-            type: 'doughnut',
-            data: {
-                labels: <?php echo $purpose_labels; ?>,
-                datasets: [{
-                    data: <?php echo $purpose_data; ?>,
-                    backgroundColor: chartColors.slice(0, <?php echo count($purpose_counts); ?>),
-                    borderColor: 'rgba(255, 255, 255, 0.8)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: {
-                            color: '#374151',
-                            font: {
-                                family: 'Poppins'
+            // Lab Chart
+            const labCtx = document.getElementById('labChart').getContext('2d');
+            const labChart = new Chart(labCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: <?php echo $lab_labels; ?>,
+                    datasets: [{
+                        data: <?php echo $lab_data; ?>,
+                        backgroundColor: chartColors.slice(0, <?php echo count($lab_counts); ?>),
+                        borderColor: 'rgba(255, 255, 255, 0.8)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#374151',
+                                font: {
+                                    family: 'Poppins'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
                             }
                         }
                     },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const label = context.label || '';
-                                const value = context.raw || 0;
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = Math.round((value / total) * 100);
-                                return `${label}: ${value} (${percentage}%)`;
-                            }
-                        }
-                    }
-                },
-                cutout: '70%'
-            }
-        });
-
-        // Lab Chart
-        const labCtx = document.getElementById('labChart').getContext('2d');
-        const labChart = new Chart(labCtx, {
-            type: 'doughnut',
-            data: {
-                labels: <?php echo $lab_labels; ?>,
-                datasets: [{
-                    data: <?php echo $lab_data; ?>,
-                    backgroundColor: chartColors.slice(0, <?php echo count($lab_counts); ?>),
-                    borderColor: 'rgba(255, 255, 255, 0.8)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: {
-                            color: '#374151',
-                            font: {
-                                family: 'Poppins'
-                            }
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const label = context.label || '';
-                                const value = context.raw || 0;
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = Math.round((value / total) * 100);
-                                return `${label}: ${value} (${percentage}%)`;
-                            }
-                        }
-                    }
-                },
-                cutout: '70%'
-            }
+                    cutout: '70%'
+                }
+            });
         });
     </script>
 </body>

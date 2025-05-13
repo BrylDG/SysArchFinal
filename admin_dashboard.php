@@ -214,23 +214,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["search_query"])) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Poppins', 'sans-serif'],
-                    },
-                    colors: {
-                        primary: '#123458',
-                        secondary: '#D4C9BE',
-                        light: '#F1EFEC',
-                        dark: '#030303',
-                    }
-                },
-            },
-        }
-    </script>
     <style>
         .notification-badge {
             position: absolute;
@@ -345,130 +328,154 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["search_query"])) {
             font-size: 0.8em;
         }
     </style>
+        <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#123458', // Main primary color
+                        'primary-dark': '#0f2a48', // Darker shade for hover
+                        'primary-darker': '#0c223a', // Even darker
+                        secondary: '#D4C9BE',
+                        light: '#F1EFEC',
+                        dark: '#030303',
+                        // For dropdown item active state, if bg-primary-700 is intended as a specific shade
+                        // 'primary-700': '#your_specific_shade_for_bg-primary-700',
+                    }
+                },
+            },
+        }
+    </script>
 </head>
 <body class="min-h-screen font-sans pt-16">
-    <!-- Top Navigation Bar -->
-    <nav class="fixed top-0 left-0 right-0 topnav shadow-lg z-50">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center h-16">
-                <!-- Logo/Brand -->
-                <div class="flex items-center">
-                    <span class="text-xl font-semibold text-light">Lab System - Admin</span>
-                </div>
-                
-                <!-- Desktop Menu -->
-                <div class="desktop-menu hidden md:flex items-center space-x-1">
-                    <a href="admin_dashboard.php" class="px-3 py-2 rounded-md text-sm font-medium text-light hover:bg-primary/20 <?php echo basename($_SERVER['PHP_SELF']) === 'admin_dashboard.php' ? 'bg-slate-700/20 text-white' : ''; ?>">Dashboard</a>
-                    
-                    <!-- Records Dropdown -->
-                    <div class="nav-dropdown">
-                        <button class="nav-dropdown-btn px-3 py-2 rounded-md text-sm font-medium text-secondary hover:bg-primary/20">
-                            Records
-                        </button>
-                        <div class="nav-dropdown-content">
-                            <a href="todays_sitins.php">Current Sit-ins</a>
-                            <a href="sit_in_records.php">Sit-in Reports</a>
-                            <a href="feedback_records.php">Feedback Reports</a>
-                            <a href="manage_sitins.php">Manage Sit-ins</a>
+        <!-- Top Navigation Bar -->
+    <nav class="fixed top-0 left-0 right-0 topnav shadow-lg z-50 bg-primary">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <!-- Logo/Brand -->
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 flex items-center">
+                            <i class="fas fa-laptop-house text-light mr-2 text-xl"></i>
+                            <span class="text-xl font-semibold text-light">Lab System - Admin</span>
                         </div>
                     </div>
                     
-                    <!-- Management Dropdown -->
-                    <div class="nav-dropdown">
-                        <button class="nav-dropdown-btn px-3 py-2 rounded-md text-sm font-medium text-secondary hover:bg-primary/20">
-                            Management
-                        </button>
-                        <div class="nav-dropdown-content">
-                            <a href="studentlist.php">List of Students</a>
-                            <a href="manage_reservation.php">Reservation Requests</a>
-                            <a href="reservation_logs.php">Reservation Logs</a>
-                            <a href="admin_upload_resources.php">Upload Resources</a>
-                            <a href="admin_leaderboard.php">Leaderboard</a>
-                            <a href="admin_lab_schedule.php">Lab Schedule</a>
-                            <a href="lab_management.php">Lab Management</a>
-                        </div>
-                    </div>
-                    
-                    <a href="create_announcement.php" class="px-3 py-2 rounded-md text-sm font-medium text-secondary hover:bg-primary/20">Announcements</a>
-                    
-                    <!-- User and Notification Controls -->
-                    <div class="flex items-center gap-4 ml-4">
-                        <!-- Notification Button -->
-                        <div class="relative">
-                            <button id="notificationButton" class="relative p-2 text-light hover:text-secondary rounded-full hover:bg-white/10 transition-all duration-200 focus:outline-none">
-                                <i class="fas fa-bell text-lg"></i>
-                                <span class="notification-badge hidden">0</span>
+                    <!-- Desktop Menu -->
+                    <div class="desktop-menu hidden md:flex items-center space-x-1">
+                        <a href="admin_dashboard.php" class="px-3 py-2 rounded-md text-sm font-medium text-light hover:bg-primary/20 <?php echo basename($_SERVER['PHP_SELF']) === 'admin_dashboard.php' ? 'bg-slate-700/20 text-white' : ''; ?>">Dashboard</a>
+                        
+                        <!-- Records Dropdown -->
+                        <div class="nav-dropdown">
+                            <button class="nav-dropdown-btn px-3 py-2 rounded-md text-sm font-medium text-secondary hover:bg-primary/20">
+                                Records
                             </button>
-                            
-                            <!-- Notification Dropdown -->
-                            <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-secondary/20 z-50 overflow-hidden">
-                                <div class="p-3 bg-primary text-white flex justify-between items-center">
-                                    <span class="font-semibold">Notifications</span>
-                                    <button id="markAllRead" class="text-xs bg-white/20 hover:bg-white/30 px-2 py-1 rounded transition-all">
-                                        Mark all as read
-                                    </button>
-                                </div>
-                                <div id="notificationList" class="max-h-80 overflow-y-auto">
-                                    <div class="p-4 text-center text-secondary">No notifications</div>
-                                </div>
+                            <div class="nav-dropdown-content">
+                                <a href="todays_sitins.php" <?php echo basename($_SERVER['PHP_SELF']) === 'todays_sitins.php' ? 'class="bg-primary-700"' : ''; ?>>Current Sit-ins</a>
+                                <a href="sit_in_records.php" <?php echo basename($_SERVER['PHP_SELF']) === 'sit_in_records.php' ? 'class="bg-primary-700"' : ''; ?>>Sit-in Reports</a>
+                                <a href="feedback_records.php" <?php echo basename($_SERVER['PHP_SELF']) === 'feedback_records.php' ? 'class="bg-primary-700"' : ''; ?>>Feedback Reports</a>
+                                <a href="manage_sitins.php" <?php echo basename($_SERVER['PHP_SELF']) === 'manage_sitins.php' ? 'class="bg-primary-700"' : ''; ?>>Manage Sit-ins</a>
                             </div>
                         </div>
+                        
+                        <!-- Management Dropdown -->
+                        <div class="nav-dropdown">
+                            <button class="nav-dropdown-btn px-3 py-2 rounded-md text-sm font-medium text-secondary hover:bg-primary/20">
+                                Management
+                            </button>
+                            <div class="nav-dropdown-content">
+                                <a href="studentlist.php" <?php echo basename($_SERVER['PHP_SELF']) === 'studentlist.php' ? 'class="bg-primary-700"' : ''; ?>>List of Students</a>
+                                <a href="manage_reservation.php" <?php echo basename($_SERVER['PHP_SELF']) === 'manage_reservation.php' ? 'class="bg-primary-700"' : ''; ?>>Reservation Requests</a>
+                                <a href="reservation_logs.php" <?php echo basename($_SERVER['PHP_SELF']) === 'reservation_logs.php' ? 'class="bg-primary-700"' : ''; ?>>Reservation Logs</a>
+                                <a href="admin_upload_resources.php" <?php echo basename($_SERVER['PHP_SELF']) === 'admin_upload_resources.php' ? 'class="bg-primary-700"' : ''; ?>>Upload Resources</a>
+                                <a href="admin_leaderboard.php" <?php echo basename($_SERVER['PHP_SELF']) === 'admin_leaderboard.php' ? 'class="bg-primary-700"' : ''; ?>>Leaderboard</a>
+                                <a href="admin_lab_schedule.php" <?php echo basename($_SERVER['PHP_SELF']) === 'admin_lab_schedule.php' ? 'class="bg-primary-700"' : ''; ?>>Lab Schedule</a>
+                                <a href="lab_management.php" <?php echo basename($_SERVER['PHP_SELF']) === 'lab_management.php' ? 'class="bg-primary-700"' : ''; ?>>Lab Management</a>
+                            </div>
+                        </div>
+                        
+                        <a href="create_announcement.php" class="px-3 py-2 rounded-md text-sm font-medium text-secondary hover:bg-primary/20 <?php echo basename($_SERVER['PHP_SELF']) === 'create_announcement.php' ? 'bg-slate-700/20 text-white' : ''; ?>">Announcements</a>
+                        
+                        <!-- User and Notification Controls -->
+                        <div class="flex items-center gap-4 ml-4">
+                            <!-- Notification Button -->
+                            <div class="relative">
+                                <button id="notificationButton" class="relative p-2 text-light hover:text-secondary rounded-full hover:bg-white/10 transition-all duration-200 focus:outline-none">
+                                    <i class="fas fa-bell text-lg"></i>
+                                    <span class="notification-badge hidden">0</span>
+                                </button>
+                                
+                                <!-- Notification Dropdown -->
+                                <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-secondary/20 z-50 overflow-hidden">
+                                    <div class="p-3 bg-primary text-white flex justify-between items-center">
+                                        <span class="font-semibold">Notifications</span>
+                                        <button id="markAllRead" class="text-xs bg-white/20 hover:bg-white/30 px-2 py-1 rounded transition-all">
+                                            Mark all as read
+                                        </button>
+                                    </div>
+                                    <div id="notificationList" class="max-h-80 overflow-y-auto">
+                                        <div class="p-4 text-center text-secondary">No notifications</div>
+                                    </div>
+                                </div>
+                            </div>
 
-                        <!-- User Profile Dropdown -->
-                        <div class="relative">
-                            <button id="userMenuButton" class="flex items-center gap-2 group focus:outline-none">
-                                <div class="relative">
-                                    <img class="h-9 w-9 rounded-full border-2 border-white/20 group-hover:border-primary transition-all" 
-                                        src="uploads/<?php echo htmlspecialchars($profile_picture); ?>" 
-                                        onerror="this.src='assets/default_avatar.png'" 
-                                        alt="Profile">
-                                </div>
-                                <span class="text-light font-medium hidden md:inline-block"><?php echo htmlspecialchars($firstname); ?></span>
-                            </button>
-                            
-                            <!-- Dropdown menu -->
-                            <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-secondary/20 z-50 overflow-hidden transition-all duration-200">
-                                <div class="py-1">
-                                    <a href="logout.php" onclick="return confirm('Are you sure you want to log out?')" 
-                                    class="flex items-center px-4 py-2 text-sm text-dark hover:bg-secondary/20 transition-colors">
-                                        <i class="fas fa-sign-out-alt mr-2 text-primary"></i>
-                                        Log Out
-                                    </a>
+                            <!-- User Profile Dropdown -->
+                            <div class="relative">
+                                <button id="userMenuButton" class="flex items-center gap-2 group focus:outline-none">
+                                    <div class="relative">
+                                        <img class="h-9 w-9 rounded-full border-2 border-white/20 group-hover:border-primary transition-all" 
+                                            src="uploads/<?php echo htmlspecialchars($profile_picture); ?>" 
+                                            onerror="this.src='assets/default_avatar.png'" 
+                                            alt="Profile">
+                                    </div>
+                                    <span class="text-light font-medium hidden md:inline-block"><?php echo htmlspecialchars($firstname); ?></span>
+                                </button>
+                                
+                                <!-- Dropdown menu -->
+                                <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-secondary/20 z-50 overflow-hidden transition-all duration-200">
+                                    <div class="py-1">
+                                        <a href="logout.php" onclick="return confirm('Are you sure you want to log out?')" 
+                                        class="flex items-center px-4 py-2 text-sm text-dark hover:bg-secondary/20 transition-colors">
+                                            <i class="fas fa-sign-out-alt mr-2 text-primary"></i>
+                                            Log Out
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Mobile menu button -->
-                <div class="mobile-menu md:hidden flex items-center">
-                    <button id="mobileMenuButton" class="text-light hover:text-secondary focus:outline-none">
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
+                    
+                    <!-- Mobile menu button -->
+                    <div class="mobile-menu md:hidden flex items-center">
+                        <button id="mobileMenuButton" class="text-light hover:text-secondary focus:outline-none">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Mobile Menu (hidden by default) -->
-        <div id="mobileMenu" class="hidden md:hidden bg-primary">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="admin_dashboard.php" class="block px-3 py-2 rounded-md text-base font-medium text-light hover:bg-primary/20">Dashboard</a>
-                <a href="todays_sitins.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Current Sit-ins</a>
-                <a href="sit_in_records.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Sit-in Reports</a>
-                <a href="feedback_records.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Feedback Reports</a>
-                <a href="manage_sitins.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Manage Sit-ins</a>
-                <a href="studentlist.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">List of Students</a>
-                <a href="manage_reservation.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Reservation Requests</a>
-                <a href="reservation_logs.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Reservation Logs</a>
-                <a href="admin_upload_resources.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Upload Resources</a>
-                <a href="admin_leaderboard.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Leaderboard</a>
-                <a href="admin_lab_schedule.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Lab Schedule</a>
-                <a href="lab_management.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Lab Management</a>
-                <a href="create_announcement.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Announcements</a>
-                <a href="logout.php" onclick="return confirm('Are you sure you want to log out?')" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Log Out</a>
+            
+            <!-- Mobile Menu (hidden by default) -->
+            <div id="mobileMenu" class="hidden md:hidden bg-primary">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                    <a href="admin_dashboard.php" class="block px-3 py-2 rounded-md text-base font-medium text-light hover:bg-primary/20">Dashboard</a>
+                    <a href="todays_sitins.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Current Sit-ins</a>
+                    <a href="sit_in_records.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Sit-in Reports</a>
+                    <a href="feedback_records.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Feedback Reports</a>
+                    <a href="manage_sitins.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Manage Sit-ins</a>
+                    <a href="studentlist.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">List of Students</a>
+                    <a href="manage_reservation.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Reservation Requests</a>
+                    <a href="reservation_logs.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Reservation Logs</a>
+                    <a href="admin_upload_resources.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Upload Resources</a>
+                    <a href="admin_leaderboard.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Leaderboard</a>
+                    <a href="admin_lab_schedule.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Lab Schedule</a>
+                    <a href="lab_management.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Lab Management</a>
+                    <a href="create_announcement.php" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Announcements</a>
+                    <a href="logout.php" onclick="return confirm('Are you sure you want to log out?')" class="block px-3 py-2 rounded-md text-base font-medium text-secondary hover:bg-primary/20">Log Out</a>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
        <!-- Main Content -->
        <div class="container mx-auto px-4 py-6">

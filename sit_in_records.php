@@ -753,201 +753,215 @@ function generatePrintView($records) {
 
     <!-- PDF Generation Script -->
     <script>
-        // Mobile menu toggle
-        document.getElementById('mobile-menu-button').addEventListener('click', function() {
-            document.getElementById('mobileMenu').classList.toggle('hidden');
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
 
-        // User dropdown toggle
-        document.getElementById('userMenuButton').addEventListener('click', function() {
-            const menu = document.getElementById('userDropdown');
-            menu.classList.toggle('hidden');
-        });
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobileMenuButton');
+            const mobileMenu = document.getElementById('mobileMenu');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Profile dropdown toggle
+            const userMenuButton = document.getElementById('userMenuButton');
+            const userDropdown = document.getElementById('userDropdown');
 
-        // Notification functionality
-        const notificationButton = document.getElementById('notificationButton');
-        const notificationDropdown = document.getElementById('notificationDropdown');
-        const notificationBadge = document.querySelector('.notification-badge');
-        
-        // Toggle notification dropdown
-        notificationButton.addEventListener('click', function(e) {
-            e.stopPropagation();
-            notificationDropdown.classList.toggle('hidden');
-            loadNotifications();
-        });
-        
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function() {
-            document.getElementById('userDropdown').classList.add('hidden');
-            notificationDropdown.classList.add('hidden');
-        });
-        
-        // Prevent dropdown from closing when clicking inside
-        notificationDropdown.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-        
-        // Mark all as read
-        document.getElementById('markAllRead').addEventListener('click', function() {
-            markAllNotificationsAsRead();
-        });
-        
-        // Function to load notifications
-        function loadNotifications() {
-            fetch('get_notifications.php')
-                .then(response => response.json())
-                .then(data => {
-                    const notificationList = document.getElementById('notificationList');
-                    
-                    if (data.length === 0) {
-                        notificationList.innerHTML = '<div class="p-3 text-center text-secondary">No notifications</div>';
-                        notificationBadge.classList.add('hidden');
-                        return;
-                    }
-                    
-                    notificationList.innerHTML = '';
-                    let unreadCount = 0;
-                    
-                    data.forEach(notification => {
-                        const notificationItem = document.createElement('div');
-                        notificationItem.className = `p-3 border-b border-gray-200 ${notification.is_read ? 'text-secondary' : 'text-dark bg-secondary/50'}`;
-                        notificationItem.innerHTML = `
-                            <div class="flex justify-between items-start">
-                                <div class="flex-1">
-                                    <p class="text-sm">${notification.message}</p>
-                                    <p class="text-xs text-secondary mt-1">${notification.created_at}</p>
-                                </div>
-                                ${notification.is_read ? '' : '<span class="w-2 h-2 rounded-full bg-primary ml-2"></span>'}
-                            </div>
-                        `;
-                        notificationList.appendChild(notificationItem);
+            userMenuButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('hidden');
+            });
+
+            // Notification functionality
+            const notificationButton = document.getElementById('notificationButton');
+            const notificationDropdown = document.getElementById('notificationDropdown');
+            const notificationBadge = document.querySelector('.notification-badge');
+            
+            // Toggle notification dropdown
+            notificationButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                notificationDropdown.classList.toggle('hidden');
+                loadNotifications();
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function() {
+                document.getElementById('userDropdown').classList.add('hidden');
+                notificationDropdown.classList.add('hidden');
+            });
+            
+            // Prevent dropdown from closing when clicking inside
+            notificationDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // Mark all as read
+            document.getElementById('markAllRead').addEventListener('click', function() {
+                markAllNotificationsAsRead();
+            });
+            
+            // Function to load notifications
+            function loadNotifications() {
+                fetch('get_notifications.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        const notificationList = document.getElementById('notificationList');
                         
-                        if (!notification.is_read) {
-                            unreadCount++;
+                        if (data.length === 0) {
+                            notificationList.innerHTML = '<div class="p-3 text-center text-secondary">No notifications</div>';
+                            notificationBadge.classList.add('hidden');
+                            return;
+                        }
+                        
+                        notificationList.innerHTML = '';
+                        let unreadCount = 0;
+                        
+                        data.forEach(notification => {
+                            const notificationItem = document.createElement('div');
+                            notificationItem.className = `p-3 border-b border-gray-200 ${notification.is_read ? 'text-secondary' : 'text-dark bg-secondary/50'}`;
+                            notificationItem.innerHTML = `
+                                <div class="flex justify-between items-start">
+                                    <div class="flex-1">
+                                        <p class="text-sm">${notification.message}</p>
+                                        <p class="text-xs text-secondary mt-1">${notification.created_at}</p>
+                                    </div>
+                                    ${notification.is_read ? '' : '<span class="w-2 h-2 rounded-full bg-primary ml-2"></span>'}
+                                </div>
+                            `;
+                            notificationList.appendChild(notificationItem);
+                            
+                            if (!notification.is_read) {
+                                unreadCount++;
+                            }
+                        });
+                        
+                        if (unreadCount > 0) {
+                            notificationBadge.textContent = unreadCount;
+                            notificationBadge.classList.remove('hidden');
+                        } else {
+                            notificationBadge.classList.add('hidden');
                         }
                     });
-                    
-                    if (unreadCount > 0) {
-                        notificationBadge.textContent = unreadCount;
-                        notificationBadge.classList.remove('hidden');
-                    } else {
-                        notificationBadge.classList.add('hidden');
-                    }
-                });
-        }
-        
-        // Function to mark all notifications as read
-        function markAllNotificationsAsRead() {
-            fetch('mark_notifications_read.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    loadNotifications();
-                }
-            });
-        }
-        
-        // Load notifications on page load
-        loadNotifications();
-
-        // Check for new notifications every 30 seconds
-        setInterval(loadNotifications, 30000);
-
-        // Function to handle PDF export
-        function exportToPDF(event) {
-            event.preventDefault();
-            
-            // Get current filters
-            const labFilter = document.getElementById('lab_filter').value;
-            const dateFilter = document.getElementById('date_filter').value;
-            const purposeFilter = document.getElementById('purpose_filter').value;
-            
-            // Build export URL
-            let url = '?export=pdf';
-            if (labFilter) url += '&lab_filter=' + encodeURIComponent(labFilter);
-            if (dateFilter) url += '&date_filter=' + encodeURIComponent(dateFilter);
-            if (purposeFilter) url += '&purpose_filter=' + encodeURIComponent(purposeFilter);
-            
-            // Check if jsPDF is already loaded
-            if (window.jspdf) {
-                fetchAndGeneratePDF(url);
-            } else {
-                // Load jsPDF dynamically
-                const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-                script.onload = function() {
-                    const autoTableScript = document.createElement('script');
-                    autoTableScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js';
-                    autoTableScript.onload = function() {
-                        fetchAndGeneratePDF(url);
-                    };
-                    document.head.appendChild(autoTableScript);
-                };
-                document.head.appendChild(script);
             }
-        }
-
-        function fetchAndGeneratePDF(url) {
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    generatePDF(data);
-                })
-                .catch(error => {
-                    console.error('Error generating PDF:', error);
-                    alert('Error generating PDF. Please try again.');
-                });
-        }
-
-        // Function to generate PDF from data
-        function generatePDF(data) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({
-                orientation: 'landscape'
-            });
-
-            // Add headers
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text(data.headers[0], doc.internal.pageSize.width / 2, 15, { align: 'center' });
-            doc.text(data.headers[1], doc.internal.pageSize.width / 2, 22, { align: 'center' });
             
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'normal');
-            doc.text(data.headers[2], doc.internal.pageSize.width / 2, 29, { align: 'center' });
+            // Function to mark all notifications as read
+            function markAllNotificationsAsRead() {
+                fetch('mark_notifications_read.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadNotifications();
+                    }
+                });
+            }
+            
+            // Load notifications on page load
+            loadNotifications();
 
-            // AutoTable configuration
-            doc.autoTable({
-                head: [data.columns],
-                body: data.rows,
-                startY: 40,
-                theme: 'grid',
-                headStyles: {
-                    fillColor: [61, 71, 79], // Dark gray color
-                    textColor: 255, // White text
-                    fontStyle: 'bold'
-                },
-                styles: {
-                    fontSize: 9,
-                    cellPadding: 2,
-                    overflow: 'linebreak'
-                },
-                margin: { left: 10, right: 10 }
-            });
+            // Check for new notifications every 30 seconds
+            setInterval(loadNotifications, 30000);
 
-            // Save the PDF
-            doc.save('sit_in_records_' + new Date().toISOString().slice(0, 10) + '.pdf');
-        }
+            // Function to handle PDF export
+            function exportToPDF(event) {
+                event.preventDefault();
+                
+                // Get current filters
+                const labFilter = document.getElementById('lab_filter').value;
+                const dateFilter = document.getElementById('date_filter').value;
+                const purposeFilter = document.getElementById('purpose_filter').value;
+                
+                // Build export URL
+                let url = '?export=pdf';
+                if (labFilter) url += '&lab_filter=' + encodeURIComponent(labFilter);
+                if (dateFilter) url += '&date_filter=' + encodeURIComponent(dateFilter);
+                if (purposeFilter) url += '&purpose_filter=' + encodeURIComponent(purposeFilter);
+                
+                // Check if jsPDF is already loaded
+                if (window.jspdf) {
+                    fetchAndGeneratePDF(url);
+                } else {
+                    // Load jsPDF dynamically
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                    script.onload = function() {
+                        const autoTableScript = document.createElement('script');
+                        autoTableScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js';
+                        autoTableScript.onload = function() {
+                            fetchAndGeneratePDF(url);
+                        };
+                        document.head.appendChild(autoTableScript);
+                    };
+                    document.head.appendChild(script);
+                }
+            }
+
+            function fetchAndGeneratePDF(url) {
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        generatePDF(data);
+                    })
+                    .catch(error => {
+                        console.error('Error generating PDF:', error);
+                        alert('Error generating PDF. Please try again.');
+                    });
+            }
+
+            // Function to generate PDF from data
+            function generatePDF(data) {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'landscape'
+                });
+
+                // Add headers
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'bold');
+                doc.text(data.headers[0], doc.internal.pageSize.width / 2, 15, { align: 'center' });
+                doc.text(data.headers[1], doc.internal.pageSize.width / 2, 22, { align: 'center' });
+                
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'normal');
+                doc.text(data.headers[2], doc.internal.pageSize.width / 2, 29, { align: 'center' });
+
+                // AutoTable configuration
+                doc.autoTable({
+                    head: [data.columns],
+                    body: data.rows,
+                    startY: 40,
+                    theme: 'grid',
+                    headStyles: {
+                        fillColor: [61, 71, 79], // Dark gray color
+                        textColor: 255, // White text
+                        fontStyle: 'bold'
+                    },
+                    styles: {
+                        fontSize: 9,
+                        cellPadding: 2,
+                        overflow: 'linebreak'
+                    },
+                    margin: { left: 10, right: 10 }
+                });
+
+                // Save the PDF
+                doc.save('sit_in_records_' + new Date().toISOString().slice(0, 10) + '.pdf');
+            }
+        });
     </script>
 </body>
 </html>
