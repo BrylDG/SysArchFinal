@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 18, 2025 at 05:56 PM
+-- Generation Time: May 18, 2025 at 06:12 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -962,9 +962,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `idno`, `course`, `yearlevel`, `email`, `firstname`, `lastname`, `middlename`, `username`, `password`, `profile_picture`, `role`, `remaining_sessions`, `points`, `cover_photo`, `survey_completed`) VALUES
-(1, 'ADMIN001', '', '', 'admin@example.com', '', '', NULL, 'admin', '123', 'Cha Hae-In _ Solo Leveling _ Season 2.jpg', 'admin', 30, 0, NULL, 0),
-(24, '22919594', 'Bachelor of Science in Information Technology', '3', 'christine@gmail.com', 'Christine Anne', 'Alesna', 'A', 'christine', '$2y$10$6eM3dXbP9cGgVuJMe/5/sOLMndcrQN9Ai4QRPIZCsYtTjFA7JWVA6', '22919594.jpg', 'admin', 30, 0, NULL, 0),
-(25, '20949194', 'Bachelor of Science in Information Technology', '3', 'brylgorgonio@gmail.com', 'Bryl', 'Gorgonio', 'Darel', 'bryl', '$2y$10$kctT1aCFnU/nTi7WdLokkeka5B1q9IalzS.vb28RF7w9cQjjA9bkK', '20949194_1747128827.jpg', 'student', 30, 3, NULL, 0),
+(24, '22919594', 'Bachelor of Science in Information Technology', '3', 'christine@gmail.com', 'Christine Anne', 'Alesna', 'A', 'christine', '$2y$10$6eM3dXbP9cGgVuJMe/5/sOLMndcrQN9Ai4QRPIZCsYtTjFA7JWVA6', '22919594.jpg', 'student', 30, 0, NULL, 0),
+(25, '20949194', 'Bachelor of Science in Information Technology', '3', 'brylgorgonio@gmail.com', 'Bryl', 'Gorgonio', 'Darel', 'bryl', '$2y$10$kctT1aCFnU/nTi7WdLokkeka5B1q9IalzS.vb28RF7w9cQjjA9bkK', '20949194_1747128827.jpg', 'admin', 30, 3, NULL, 0),
 (26, '21950195', 'Bachelor of Science in Information Technology', '3', 'kobe@gmail.com', 'Kobe Bryan', 'Amaro', 'A', 'kobe', '$2y$10$tRn0VyyfQZMYf3QCtfpk7OIR4iV0I87clBG.zcBGUEl4ysAr9uRtK', '21950195_1747128136.jpg', 'student', 28, 1, NULL, 0);
 
 --
