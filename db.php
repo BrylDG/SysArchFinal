@@ -2,7 +2,7 @@
 $servername = "localhost";
 $username = "root"; // Change as needed
 $password = ""; // Change as needed
-$database = "users"; // Change as needed
+$database = "sitinmanagement"; // Change as needed
 
 // Enable error reporting for MySQLi
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
