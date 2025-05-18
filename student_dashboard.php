@@ -139,7 +139,7 @@ if (isset($_SESSION['idno'])) {
         }
         
         .card {
-            background-color: #F1EFEC;
+            background-color: white;
             border: 1px solid #D4C9BE;
         }
         

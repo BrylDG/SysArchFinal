@@ -63,6 +63,9 @@ $page_title = "Lab Resources";
         }
     </script>
     <style>
+        main {
+            background-color: #F1EFEC;
+        }
         .notification-badge {
             position: absolute;
             top: -5px;
@@ -293,8 +296,8 @@ $page_title = "Lab Resources";
     </nav>
 
     <!-- Main Content -->
-    <main class="pt-16 min-h-screen bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="pt-16 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white">
             <!-- Page header -->
             <div class="mb-8">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

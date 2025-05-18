@@ -244,7 +244,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit'])) {
         }
         
         .card {
-            background-color: #F1EFEC;
+            background-color: white;
             border: 1px solid #D4C9BE;
         }
         
@@ -562,8 +562,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit'])) {
 
     <!-- Main Content -->
     <div class="container mx-auto p-6">
-        <!-- ... (previous code remains the same until the reservation form) ... -->
-
         <div class="card rounded-xl shadow-lg border border-secondary p-6 hover:shadow-xl transition-all duration-300">
             <h2 class="text-2xl font-semibold mb-6 text-dark border-b border-secondary pb-2">Lab Reservation</h2>
             
@@ -774,7 +772,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit'])) {
                     
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-secondary/30">
-                            <thead class="bg-secondary/10">
+                            <thead class="bg-primary/90">
                                 <tr>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Date</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Lab</th>

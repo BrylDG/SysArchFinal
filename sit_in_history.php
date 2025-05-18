@@ -24,10 +24,32 @@ if (empty($profile_picture)) {
     $profile_picture = "default_avatar.png";
 }
 
+// List of foul words to check against (can be expanded)
+$foul_words = array('fuck', 'shit', 'bitch', 'asshole', 'damn', 'crap', 'piss', 'dick', 'cock', 'pussy', 
+                   'fag', 'faggot', 'nigger', 'nigga', 'whore', 'slut', 'bastard', 'motherfucker', 'cunt');
+
 // Handle feedback submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['feedback'])) {
     $record_id = $_POST['record_id'];
     $feedback = $_POST['feedback'];
+    
+    // Check for foul language
+    $contains_foul_language = false;
+    $feedback_lower = strtolower($feedback);
+    $detected_words = array();
+    
+    foreach ($foul_words as $word) {
+        if (strpos($feedback_lower, $word) !== false) {
+            $contains_foul_language = true;
+            $detected_words[] = $word;
+        }
+    }
+    
+    if ($contains_foul_language) {
+        $_SESSION['feedback_warning'] = "Your feedback contains inappropriate language (" . implode(', ', $detected_words) . "). It has been flagged.";
+    } else {
+        $_SESSION['feedback_success'] = "Feedback submitted successfully!";
+    }
     
     $feedback_query = "UPDATE sit_in_records SET feedback = ? WHERE id = ? AND student_id = ?";
     $stmt = $conn->prepare($feedback_query);
@@ -109,6 +131,43 @@ $page_title = "Sit-in History";
             document.body.style.overflow = '';
         }
 
+        // Check for foul language but allow submission
+        function checkFoulLanguage(form, recordId) {
+            const foulWords = <?php echo json_encode($foul_words); ?>;
+            const feedback = form.feedback.value.toLowerCase();
+            let containsFoulLanguage = false;
+            let detectedWords = [];
+            
+            foulWords.forEach(word => {
+                if (feedback.includes(word.toLowerCase())) {
+                    containsFoulLanguage = true;
+                    detectedWords.push(word);
+                }
+            });
+            
+            if (containsFoulLanguage) {
+                const warningDiv = document.getElementById(`feedback-warning-${recordId}`);
+                warningDiv.innerHTML = `
+                    <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-yellow-700">
+                                    Your feedback contains inappropriate language (${detectedWords.join(', ')}). 
+                                    You can still submit it, but it will be flagged.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                warningDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            return true; // Always allow submission
+        }
+
         // Close overlay when clicking outside the form
         document.addEventListener('DOMContentLoaded', function() {
             document.addEventListener('click', function(e) {
@@ -183,7 +242,7 @@ $page_title = "Sit-in History";
         }
         
         .card {
-            background-color: #F1EFEC;
+            background-color: white;
             border: 1px solid #D4C9BE;
         }
         
@@ -285,6 +344,18 @@ $page_title = "Sit-in History";
         .status-completed {
             background-color: rgba(16, 185, 129, 0.1);
             color: rgba(5, 150, 105, 1);
+        }
+        
+        .foul-feedback {
+            color: #ef4444;
+            background-color: rgba(239, 68, 68, 0.1);
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+        }
+        
+        .foul-warning-icon {
+            color: #ef4444;
+            margin-left: 0.25rem;
         }
     </style>
 </head>
@@ -411,6 +482,39 @@ $page_title = "Sit-in History";
 
     <!-- Main Content -->
     <div class="container mx-auto p-6">
+        <!-- Display session messages if exists -->
+        <?php if (isset($_SESSION['feedback_warning'])): ?>
+            <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-yellow-700">
+                            <?php echo htmlspecialchars($_SESSION['feedback_warning']); ?>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <?php unset($_SESSION['feedback_warning']); ?>
+        <?php endif; ?>
+        
+        <?php if (isset($_SESSION['feedback_success'])): ?>
+            <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-check-circle text-green-500"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-green-700">
+                            <?php echo htmlspecialchars($_SESSION['feedback_success']); ?>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <?php unset($_SESSION['feedback_success']); ?>
+        <?php endif; ?>
+
         <div class="card rounded-xl shadow-lg border border-secondary p-6 hover:shadow-xl transition-all duration-300">
             <div class="flex justify-between items-center mb-6">
                 <div>
@@ -425,7 +529,7 @@ $page_title = "Sit-in History";
             <!-- History Table -->
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-secondary/30">
-                    <thead class="bg-secondary/10">
+                    <thead class="bg-primary/90">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Purpose</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Lab</th>
@@ -442,7 +546,19 @@ $page_title = "Sit-in History";
                                 <td colspan="7" class="px-6 py-4 text-center text-secondary">No sit-in records found.</td>
                             </tr>
                         <?php } else { ?>
-                            <?php foreach ($sit_in_history as $record) { ?>
+                            <?php foreach ($sit_in_history as $record) { 
+                                // Check if feedback contains foul language
+                                $contains_foul = false;
+                                if (!empty($record['feedback'])) {
+                                    $feedback_lower = strtolower($record['feedback']);
+                                    foreach ($foul_words as $word) {
+                                        if (strpos($feedback_lower, $word) !== false) {
+                                            $contains_foul = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            ?>
                                 <tr class="hover:bg-secondary/10 transition-colors">
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($record['purpose']); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($record['lab']); ?></td>
@@ -459,7 +575,12 @@ $page_title = "Sit-in History";
                                     <td class="px-6 py-4">
                                         <div id="feedback-display-<?php echo $record['id']; ?>" class="flex items-center">
                                             <?php if (!empty($record['feedback'])) { ?>
-                                                <span class="text-dark"><?php echo htmlspecialchars($record['feedback']); ?></span>
+                                                <div class="<?php echo $contains_foul ? 'foul-feedback' : ''; ?>">
+                                                    <?php echo htmlspecialchars($record['feedback']); ?>
+                                                    <?php if ($contains_foul) { ?>
+                                                        <i class="fas fa-exclamation-circle foul-warning-icon"></i>
+                                                    <?php } ?>
+                                                </div>
                                                 <button onclick="toggleFeedbackForm(<?php echo $record['id']; ?>, event)" class="ml-2 text-primary hover:text-primary/70">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
@@ -490,11 +611,15 @@ $page_title = "Sit-in History";
                     </button>
                 </div>
                 
-                <form method="POST" class="space-y-4">
+                <!-- Warning container -->
+                <div id="feedback-warning-<?php echo $record['id']; ?>"></div>
+                
+                <form method="POST" onsubmit="return checkFoulLanguage(this, <?php echo $record['id']; ?>)" class="space-y-4">
                     <input type="hidden" name="record_id" value="<?php echo $record['id']; ?>">
                     <div>
                         <textarea name="feedback" rows="4" class="w-full p-3 bg-white border border-secondary/50 rounded-lg text-dark focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
                             placeholder="Enter your feedback about this session..."><?php echo htmlspecialchars($record['feedback'] ?? ''); ?></textarea>
+                        <p class="text-xs text-secondary mt-1">Please keep your feedback professional and respectful.</p>
                     </div>
                     <div class="flex justify-end space-x-2">
                         <button type="button" onclick="toggleFeedbackForm(<?php echo $record['id']; ?>, event)" class="px-4 py-2 border border-secondary/50 rounded-lg hover:bg-secondary/10 transition-all duration-200">

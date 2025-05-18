@@ -409,7 +409,7 @@ $page_title = "Lab Schedule";
     <!-- Info Section -->
     <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Legend Card -->
-            <div class="bg-light p-5 rounded-lg border border-secondary shadow-sm">
+            <div class="bg-white p-5 rounded-lg border border-secondary shadow-sm">
                 <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
                     <i class="fas fa-info-circle mr-2"></i> Legend
                 </h3>
@@ -426,7 +426,7 @@ $page_title = "Lab Schedule";
             </div>
 
             <!-- Current Time Card -->
-            <div class="bg-light p-5 rounded-lg border border-secondary shadow-sm">
+            <div class="bg-white p-5 rounded-lg border border-secondary shadow-sm">
                 <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
                     <i class="fas fa-clock mr-2"></i> Current Time
                 </h3>
@@ -439,7 +439,7 @@ $page_title = "Lab Schedule";
             </div>
 
             <!-- Notes Card -->
-            <div class="bg-light p-5 rounded-lg border border-secondary shadow-sm">
+            <div class="bg-white p-5 rounded-lg border border-secondary shadow-sm">
                 <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
                     <i class="fas fa-clipboard mr-2"></i> Notes
                 </h3>
@@ -455,7 +455,7 @@ $page_title = "Lab Schedule";
         <!-- Header Section -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 mt-10">
             <!-- Day Group Selector -->
-            <div class="flex flex-wrap gap-2 bg-light p-2 rounded-lg border border-secondary">
+            <div class="flex flex-wrap gap-2 bg-white p-2 rounded-lg border border-secondary">
                 <?php foreach ($day_groups as $group_code => $group_name): ?>
                     <button 
                         onclick="showDayGroup('<?php echo $group_code; ?>')" 
@@ -489,10 +489,9 @@ $page_title = "Lab Schedule";
                             <?php foreach ($time_slots as $index => $slot): 
                                 $time_slot_str = $slot['start'] . ' - ' . $slot['end'];
                             ?>
-                                <tr class="<?php echo $index % 2 === 0 ? 'bg-light' : 'bg-secondary/10'; ?> hover:bg-secondary/20 transition-colors">
+                                <tr class="<?php echo $index % 2 === 0 ? 'bg-white' : 'bg-white'; ?> hover:bg-secondary/20 transition-colors">
                                     <td class="p-4 font-medium text-dark whitespace-nowrap border-r border-secondary/30">
                                         <div class="flex items-center">
-                                            <i class="fas fa-clock mr-2 text-primary/80"></i>
                                             <?php echo htmlspecialchars($slot['display']); ?>
                                         </div>
                                     </td>
@@ -501,12 +500,11 @@ $page_title = "Lab Schedule";
                                     ?>
                                         <td class="p-4 text-center border-r border-secondary/30 last:border-r-0">
                                             <div class="flex justify-center">
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium transition-all duration-200 
+                                                <span class="inline-flex items-center rounded-full text-sm font-medium transition-all duration-200 
                                                     <?php echo $is_available ? 
                                                     'status-available bg-green-100 text-green-800' : 
                                                     'status-occupied bg-red-100 text-red-800'; ?>">
-                                                    <i class="fas <?php echo $is_available ? 'fa-check-circle' : 'fa-times-circle'; ?> mr-1.5"></i>
-                                                    <?php echo $is_available ? 'Available' : 'Occupied'; ?>
+                                                    <i class="fas <?php echo $is_available ? 'fa-check-circle' : 'fa-times-circle'; ?>"></i>
                                                 </span>
                                             </div>
                                         </td>

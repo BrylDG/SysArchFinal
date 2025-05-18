@@ -21,6 +21,22 @@ if (empty($profile_picture)) {
     $profile_picture = 'default_avatar.png';
 }
 
+// List of foul language words to detect
+$foul_words = array('shit', 'fuck', 'asshole', 'bitch', 'damn', 'crap', 'piss', 'dick', 'cock', 
+                   'pussy', 'fag', 'bastard', 'slut', 'whore', 'douche', 'faggot', 
+                   'motherfucker', 'bullshit', 'bollocks', 'arsehole', 'wanker', 'twat', 
+                   'cunt', 'prick', 'hell', 'darn', 'fucking', 'shitty', 'ass', 'dickhead');
+
+// Function to check for foul language
+function containsFoulLanguage($text, $foul_words) {
+    foreach ($foul_words as $word) {
+        if (preg_match("/\b" . preg_quote($word, '/') . "\b/i", $text)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // Fetch all sit-in records (both with and without feedback)
 $records_query = "SELECT sr.id, sr.purpose, sr.lab, sr.start_time, sr.end_time, sr.feedback,
                          u.firstname, u.lastname, u.idno
@@ -30,6 +46,14 @@ $records_query = "SELECT sr.id, sr.purpose, sr.lab, sr.start_time, sr.end_time, 
 
 $result = $conn->query($records_query);
 $all_records = $result->fetch_all(MYSQLI_ASSOC);
+
+// Count feedback with foul language
+$foul_language_count = 0;
+foreach ($all_records as $record) {
+    if (!empty($record['feedback']) && containsFoulLanguage($record['feedback'], $foul_words)) {
+        $foul_language_count++;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -64,6 +88,13 @@ $all_records = $result->fetch_all(MYSQLI_ASSOC);
         }
     </script>
     <style>
+        .foul-language {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            border-left: 3px solid #b91c1c;
+            padding-left: 8px;
+        }
+        
         .feedback-cell {
             max-width: 300px;
             white-space: nowrap;
@@ -301,6 +332,10 @@ $all_records = $result->fetch_all(MYSQLI_ASSOC);
                                 echo $feedback_count . ' feedback entries';
                             ?>
                         </span>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                            <?php echo $foul_language_count; ?> foul language
+                        </span>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                             <i class="fas fa-users mr-1"></i>
                             <?php echo count($all_records); ?> total records
@@ -322,6 +357,24 @@ $all_records = $result->fetch_all(MYSQLI_ASSOC);
                                 <dt class="text-sm font-medium text-gray-500 truncate">Total Feedback</dt>
                                 <dd class="flex items-baseline">
                                     <div class="text-2xl font-semibold text-gray-900"><?php echo $feedback_count; ?></div>
+                                </dd>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-red-500 rounded-md p-3">
+                                <i class="fas fa-exclamation-triangle text-white"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dt class="text-sm font-medium text-gray-500 truncate">Foul Language</dt>
+                                <dd class="flex items-baseline">
+                                    <div class="text-2xl font-semibold text-gray-900">
+                                        <?php echo $foul_language_count; ?>
+                                    </div>
                                 </dd>
                             </div>
                         </div>
@@ -367,32 +420,6 @@ $all_records = $result->fetch_all(MYSQLI_ASSOC);
                                                 }
                                             }
                                             echo count($labs_with_feedback);
-                                        ?>
-                                    </div>
-                                </dd>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-white overflow-hidden shadow rounded-lg">
-                    <div class="px-4 py-5 sm:p-6">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 bg-yellow-500 rounded-md p-3">
-                                <i class="fas fa-tasks text-white"></i>
-                            </div>
-                            <div class="ml-5 w-0 flex-1">
-                                <dt class="text-sm font-medium text-gray-500 truncate">Purposes with Feedback</dt>
-                                <dd class="flex items-baseline">
-                                    <div class="text-2xl font-semibold text-gray-900">
-                                        <?php
-                                            $purposes_with_feedback = [];
-                                            foreach ($all_records as $record) {
-                                                if (!empty($record['feedback']) && !in_array($record['purpose'], $purposes_with_feedback)) {
-                                                    $purposes_with_feedback[] = $record['purpose'];
-                                                }
-                                            }
-                                            echo count($purposes_with_feedback);
                                         ?>
                                     </div>
                                 </dd>
@@ -456,9 +483,11 @@ $all_records = $result->fetch_all(MYSQLI_ASSOC);
                                         </td>
                                         <td class="px-6 py-4 text-sm text-gray-500 feedback-cell">
                                             <?php if (!empty($record['feedback'])) { ?>
-                                                <div class="flex items-center">
-                                                    <i class="fas fa-comment-alt text-blue-500 mr-2"></i>
+                                                <div class="flex items-center <?php echo containsFoulLanguage($record['feedback'], $foul_words) ? 'foul-language' : ''; ?>">
+                                                    <i class="fas fa-comment-alt <?php echo containsFoulLanguage($record['feedback'], $foul_words) ? 'text-red-500' : 'text-blue-500'; ?> mr-2"></i>
                                                     <?php echo htmlspecialchars($record['feedback']); ?>
+                                                    <?php if (containsFoulLanguage($record['feedback'], $foul_words)) { ?>
+                                                    <?php } ?>
                                                 </div>
                                             <?php } else { ?>
                                                 <span class="text-gray-400 italic">No feedback</span>

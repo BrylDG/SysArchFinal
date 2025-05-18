@@ -82,11 +82,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <!-- Button Group -->
             <div class="flex justify-between">
+                <button type="button" onclick="window.location.href='register.php'" class="w-full py-3 bg-[#D4C9BE] text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition-colors mr-4">
+                    Register
+                </button>
                 <button type="submit" class="w-full py-3 bg-[#123458] text-white rounded-lg font-semibold hover:bg-[#123465] transition-colors">
                     Login
-                </button>
-                <button type="button" onclick="window.location.href='register.php'" class="w-full py-3 bg-[#D4C9BE] text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition-colors ml-4">
-                    Register
                 </button>
             </div>
         </form>

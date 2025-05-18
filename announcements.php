@@ -76,6 +76,7 @@ $announcement_result = mysqli_query($conn, $announcement_query);
         }
     </script>
     <style>
+
         .notification-badge {
             position: absolute;
             top: -5px;
@@ -92,7 +93,7 @@ $announcement_result = mysqli_query($conn, $announcement_query);
         }
         
         .announcement-card {
-            background: rgba(241, 239, 236, 0.9);
+            background: white;
             border: 1px solid #D4C9BE;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -171,8 +172,8 @@ $announcement_result = mysqli_query($conn, $announcement_query);
         }
         
         body {
-            background-color: #F1EFEC;
             color: #030303;
+                        background-color: #F1EFEC;
         }
         
         .topnav {
@@ -245,7 +246,7 @@ $announcement_result = mysqli_query($conn, $announcement_query);
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-100 to-slate-200 min-h-screen font-sans">
+<body class=" from-slate-100 to-slate-200 min-h-screen font-sans">
     <!-- Top Navigation Bar -->
     <nav class="fixed top-0 left-0 right-0 topnav shadow-lg z-50">
         <div class="container mx-auto px-4">
